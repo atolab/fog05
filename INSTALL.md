@@ -1,142 +1,91 @@
-# Eclipse fog05 FIM installation.
+Remove everything:
 
----
+```
+pip3 uninstall -y fog05 yaks papero
 
-In order to run install Eclipse fog05 as FIM (Fog Infrastrucutre Manager)
-you have to execute the following commands
-
-
-    ./fos_install.sh
-
-Then you have to edit the agent and linux plugin configuration file
+```
 
 
-Agent configuration file: `/etc/fos/agent.json`
+Install zenoh API
 
-update the mgmt_interface parameter with the name of the interface used for managment
-update the autoload parameter to false
+```
+curl -L -o libzenohc.so https://www.dropbox.com/s/sewvuvq187vt14s/libzenohc.so
+sudo cp libzenohc.so /usr/local/lib
+git clone https://github.com/atolab/zenoh-python
+cd zenoh-python
+sudo python3 setup.py install
+cd ..
 
+```
 
-
-Linux Plugin configuration file: `/etc/fos/plugins/linux/linux_plugin.json`
-
-update the nodeid parameter with the content of `/etc/machine-id`
-this is used to identify the node and to make the plugin connect the right agent.
-
-
-If you want to run contanerized applications on the node, you have to install and configure LXD
-
-sudo apt remove --purge lxd
-sudo snap install lxd
-sudo lxd init
-
-add current user to lxd and verify that it is operational (eg. launch a container `lxc launch images:alpine/edge test` and remove it `lxc delete --force test`)
-then execute the following commands:
+Install YAKS API
 
 
-    cd fog05/fos-plugins/linuxbridge/
-    sudo make install
+```
+git clone https://github.com/atolab/yaks-python
+cd yaks-python
+sudo make install
+cd ..
+
+```
 
 
-and then edit the Linux Bridge plugin configuration file:  `/etc/fos/plugins/linuxbridge/linuxbridge_plugin.json`
 
-update the nodeid parameter with the content of `/etc/machine-id`
-this is used to identify the node and to make the plugin connect the right agent.
-update the dataplane_interface parameter with the name of the interface used for dataplane (VxLANs will be created over that interface)
+Clone fog05 from and switch to branch 5gcoral
 
+```
+git clone https://github.com/atolab/fog05
+cd fog05
+git checkout 5gcoral
 
-then you have to install the LXD plugin
+```
 
-    cd fog05/fos-plugins/LXD
-    sudo make install
-
-
-and then edit the LXD plugin configuration file:  `/etc/fos/plugins/LXD/LXD_plugin.json`
-
-update the nodeid parameter with the content of `/etc/machine-id`
-this is used to identify the node and to make the plugin connect the right agent.
+Make and install the python types and API
 
 
-# Start Eclipse fog05
+```
+sudo pip3 install pyang pyangbind
+sudo make -C src/im/python
+sudo make -C src/im/python install
+sudo make -C src/api/python/api install
 
-There are two ways to start fog05, the first one using systemd and the second one by hand,
-the second one is the one to be used during development.
+```
 
-## Start Eclipse fog05 FIM using systemd
+Copy all the plugins needed plugins in the /etc/fos/plugins directory
+You need to copy all the files except for the configuration ones for each plugins
 
-In order to start Eclipse fog05 FIM using systemd you have to first enable it
-by using the script present under `etc/systemd/enable.sh` this will enable autostart of the fog05 Node
-
-    $ cd fog05
-    $ ./etc/systemd/enable
-    $ ./etc/systemd/start
-
-This will start all the component for an all-in-one fog05 installation.
-
-## Start Eclipse fog05 FIM by hand
-
-As this version is still under development you have to start all the components by hand
-(even if a systemd service is provided and installed, but start manually is more safe at the moment)
-
-You need at least 5 shells/screens, as you have to start
-
-1. Yaks server
-2. Eclipse fog05 Agent
-3. Linux Plugin
-4. Linux Bridge Plugin
-5. LXD Plugin
+Update the configuration files of agent `/etc/fos/agent.json` and the one of the plugins `/etc/fos/plugins/<name>/<name>_plugin.json` by replacing the port of the `ylocator` with 7447
 
 
-to start the components:
+Download and install the agent
 
-YAKS:
-    yaksd -vv
+```
+curl -L -o /tmp/agent.tar.gz https://www.dropbox.com/s/tot5io70kx5jf21/fos_new.tar.gz
+tar -xzvf /tmp/agent.tar.gz
+sudo cp agent /etc/fos/agent
 
- Agent:
-
-    sudo -u fos fagent -c /etc/fos/agent.json -v
-
-Linux Plugin:
-
-    sudo -u fos fos_linux /etc/fos/plugins/linux/linux_plugin.json
-
-Linux Bridge Plugin:
-
-    sudo -u fos /etc/fos/plugins/linuxbridge/linuxbridge_plugin /etc/fos/plugins/linuxbridge/linuxbridge_plugin.json
-
-LXD Plugin:
-
-    sudo -u fos /etc/fos/plugins/LXD/LXD_plugin /etc/fos/plugins/LXD/LXD_plugin.json
+```
 
 
-## Verify that the node is running
-
-Open another shell (or use another machine that has the fog05 api installed)
-and execute:
-
-    python3
-    >>> from fog05 import FIMAPI
-    >>> api = FIMAPI(locator='127.0.0.1') # or locator='IP of the YAKS server'
-    >>> api.node.list()
-    >>> ['your node uuid',...]
-    >>> api.close()
-
-Examples are available in https://github.com/atolab/fog05_demo/tree/master/fim_api
+Download and install yaks
 
 
-REST API for FIM is under development...
+```
+
+curl -L -o /tmp/yaks.tar.gz https://www.dropbox.com/s/v55js274504z5f5/yaks.tar.gz
+tar -xzvf /tmp/yaks.tar.gz
+sudo cp zenoh /etc/fos/zenoh
+sudo mv /etc/fos/zenoh /etc/fos/zenohd
+sudo cp yaks-plugin.cmxs /etc/fos/yaks-plugin.cmxs
+sudo cp yaksd /etc/fos/yaksd
+```
 
 
-## Basic CLI Interface
+Update your descriptor following: https://github.com/atolab/fog05_demo/blob/master/fim_api/fdu_lxd_net.json
 
-It is also possible to install a CLI interface, just execute
-
-    ./install_cli.sh
+Example of start.py script https://github.com/atolab/fog05_demo/blob/master/fim_api/yaks/start.py
 
 
-On a node with the fos CLI interface installed declare the env variable `FOS_YAKS_ENDPOINT`
-and verify the list of the nodes available
 
-    export FOS_YAKS_ENDPOINT="tcp/<address of yaks server>:7447"
-    fos fim node list
+
 
