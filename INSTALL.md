@@ -13,6 +13,7 @@ curl -L -o libzenohc.so https://www.dropbox.com/s/sewvuvq187vt14s/libzenohc.so
 sudo cp libzenohc.so /usr/local/lib
 git clone https://github.com/atolab/zenoh-python
 cd zenoh-python
+git checkout 1ced877917816acea13e58c151e02cf950ad8009
 sudo python3 setup.py install
 cd ..
 
@@ -24,6 +25,7 @@ Install YAKS API
 ```
 git clone https://github.com/atolab/yaks-python
 cd yaks-python
+git checkout 50c9fc7d022636433709340f220e7b58cd74cefc
 sudo make install
 cd ..
 
@@ -88,4 +90,17 @@ Example of start.py script https://github.com/atolab/fog05_demo/blob/master/fim_
 
 
 
+##### Commits ID used for this build
 
+```
+apero-core c36dee532259feb5d5bda31feb1461cd854c1e88
+apero-net 824c954ed464577a23c18842fedcfe8dd860094f
+apero-time b0446b79b8265d4944b58414e7adc26a035dd954
+zenoh ff2d124ff7894059b6eee10cedaa1560757c087e
+yaks-common 5d2e70dcac6fe97acc5a8a5868f1dbe110343e61
+yaks-ocaml d07664597b9f62445e0cf83abd32dea9956baf06
+yaks 87cca6e109e72179267d5a64ebeb3489de5d60a8
+zenoh-c 58bad2cf1616f405fe401b22a713b95a6fef786c
+zenoh-python 1ced877917816acea13e58c151e02cf950ad8009
+yaks-python 50c9fc7d022636433709340f220e7b58cd74cefc
+```
