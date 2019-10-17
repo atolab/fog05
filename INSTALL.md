@@ -116,4 +116,5 @@ yaks 87cca6e109e72179267d5a64ebeb3489de5d60a8
 zenoh-c 58bad2cf1616f405fe401b22a713b95a6fef786c
 zenoh-python 1ced877917816acea13e58c151e02cf950ad8009
 yaks-python 50c9fc7d022636433709340f220e7b58cd74cefc
+fog05 5gcoral branch
 ```
