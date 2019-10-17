@@ -10,7 +10,7 @@ LINUX_PLUGIN_CONFFILE = /etc/fos/plugins/linux/linux_plugin.json
 
 all:
 
-	make -C src/im/python
+	#make -C src/im/python
 	make -C src/im/ocaml install
 	make -C src/core/ocaml install
 	make -C src/api/ocaml/fimapi install

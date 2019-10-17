@@ -9,8 +9,16 @@ pip3 uninstall -y fog05 yaks papero
 Install zenoh API
 
 ```
-curl -L -o libzenohc.so https://www.dropbox.com/s/sewvuvq187vt14s/libzenohc.so
-sudo cp libzenohc.so /usr/local/lib
+### ubuntu 18.04
+curl -L -o /tmp/lib18.tar.gz https://www.dropbox.com/s/1i2v5kxl8vw575t/lib18.tar.gz
+tar -xzvf /tmp/lib18.tar.gz -C /tmp
+
+### ubuntu 16.04
+curl -L -o /tmp/lib16.tar.gz https://www.dropbox.com/s/hpxdymyx26det6p/lib16.tar.gz
+tar -xzvf /tmp/lib16.tar.gz -C /tmp
+
+###
+sudo cp /tmp/libzenohc.so /usr/local/lib
 git clone https://github.com/atolab/zenoh-python
 cd zenoh-python
 git checkout 1ced877917816acea13e58c151e02cf950ad8009
@@ -62,7 +70,11 @@ Update the configuration files of agent `/etc/fos/agent.json` and the one of the
 Download and install the agent
 
 ```
-curl -L -o /tmp/agent.tar.gz https://www.dropbox.com/s/tot5io70kx5jf21/fos_new.tar.gz
+#### ubuntu 18
+curl -L -o /tmp/agent.tar.gz https://www.dropbox.com/s/0xga125gtkxp7ot/agent18.tar.gz
+#### ubuntu 16
+curl -L -o /tmp/agent.tar.gz https://www.dropbox.com/s/h31qs0k6klk53qe/agent16.tar.gz
+
 tar -xzvf /tmp/agent.tar.gz
 sudo cp agent /etc/fos/agent
 
@@ -73,8 +85,8 @@ Download and install yaks
 
 
 ```
-
-curl -L -o /tmp/yaks.tar.gz https://www.dropbox.com/s/v55js274504z5f5/yaks.tar.gz
+### only ubuntu 18
+curl -L -o /tmp/yaks.tar.gz https://www.dropbox.com/s/q1lcd20ug8ddhhs/yaks.tar.gz
 tar -xzvf /tmp/yaks.tar.gz
 sudo cp zenoh /etc/fos/zenoh
 sudo mv /etc/fos/zenoh /etc/fos/zenohd
@@ -93,6 +105,7 @@ Example of start.py script https://github.com/atolab/fog05_demo/blob/master/fim_
 ##### Commits ID used for this build
 
 ```
+ocaml - ocaml-variants.4.07.1+flambda
 apero-core c36dee532259feb5d5bda31feb1461cd854c1e88
 apero-net 824c954ed464577a23c18842fedcfe8dd860094f
 apero-time b0446b79b8265d4944b58414e7adc26a035dd954
