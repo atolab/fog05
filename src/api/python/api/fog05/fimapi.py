@@ -488,13 +488,14 @@ class FIMAPI(object):
             fdu_info = self.connector.glob.actual.get_node_fdu_instance(
                 self.sysid, self.tenantid, '*', instanceid)
             while fdu_info is None:
-                    fdu_info = self.connector.glob.actual.get_node_fdu_instance(
-                self.sysid, self.tenantid, '*', instanceid)
+                    fdu_info = self.connector.glob.actual.get_node_fdu_instance(self.sysid, self.tenantid, '*', instanceid)
+                    time.sleep(1)
+
             fdu = InfraFDU(fdu_info)
             es = fdu.get_status()
             while es.upper() not in [state, 'ERROR']:
-                fdu_info = self.connector.glob.actual.get_node_fdu_instance(
-                self.sysid, self.tenantid, '*', instanceid)
+                fdu_info = self.connector.glob.actual.get_node_fdu_instance(self.sysid, self.tenantid, '*', instanceid)
+                time.sleep(1)
                 fdu = InfraFDU(fdu_info)
                 es = fdu.get_status()
 
@@ -553,8 +554,7 @@ class FIMAPI(object):
              returning
             :return: instance id
             '''
-            desc = self.connector.glob.actual.get_catalog_fdu_info(
-                self.sysid, self.tenantid, fduid)
+            desc = self.connector.glob.actual.get_catalog_fdu_info(self.sysid, self.tenantid, fduid)
             if desc is None:
                 raise ValueError('FDU with this UUID not found in the catalog')
 
