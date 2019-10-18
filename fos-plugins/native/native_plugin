@@ -288,7 +288,15 @@ class Native(RuntimePluginFDU):
                         cmd = '{} {}'.format(fdu.cmd, ' '.join(fdu.args))
                         na_script = na_script.render(command=cmd, outfile=pid_file, path=native_dir)
                         self.logger.info('run_fdu()', '[ INFO ] Lenght of runscript is {}'.format(len(na_script)))
-                        self.os.store_file(na_script, native_dir, f_name)
+                        # JUST FOR MILAN
+                        full_path = os.path.join(native_dir, f_name)
+                        f = open(full_path, 'w')
+                        f.write(na_script)
+                        f.flush()
+                        f.close()
+
+
+                        #self.os.store_file(na_script, native_dir, f_name)
                         chmod_cmd = 'chmod +x {}'.format(os.path.join(native_dir, f_name))
                         self.os.execute_command(chmod_cmd, blocking=True, external=False)
                         cmd = '{}'.format(os.path.join(native_dir, f_name))
@@ -329,6 +337,8 @@ class Native(RuntimePluginFDU):
                 self.logger.info('stop_fdu()', 'FDU source is none')
                 self.logger.info('stop_fdu()', 'Native Plugin - PID {}'.format(pid))
                 self.os.send_sig_int(pid)
+                time.sleep(2)
+                # self.os.execute_command('sudo pkill -6 -P {}'.format(pid),blocking=True, external=False)
                 f_name = '{}.pid'.format(instance_uuid)
                 f_path = os.path.join(self.BASE_DIR, self.STORE_DIR)
                 pid_file = os.path.join(f_path, f_name)
@@ -336,6 +346,8 @@ class Native(RuntimePluginFDU):
                 if self.os.file_exists(pid_file):
                     pid = int(self.os.read_file(pid_file))
                     self.logger.info('stop_fdu()', 'Native Plugin - PID {}'.format(pid))
+                    self.os.send_sig_int(pid)
+                    time.sleep(5)
                     self.os.execute_command('sudo pkill -9 -P {}'.format(pid),blocking=True, external=False)
                     if self.os.check_if_pid_exists(pid):
                         self.os.send_sig_int(pid)
