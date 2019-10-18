@@ -555,6 +555,8 @@ class Linux(OSPlugin):
     def send_signal(self, signal, pid):
         if isinstance(pid, str):
             pid = int(pid)
+         if isinstance(signal, str):
+            signal = int(signal)
         try:
             if self.__check_if_pid_exists(pid) is False:
                 self.logger.error(
