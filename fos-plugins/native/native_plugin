@@ -347,7 +347,9 @@ class Native(RuntimePluginFDU):
                     pid = int(self.os.read_file(pid_file))
                     self.logger.info('stop_fdu()', 'Native Plugin - PID {}'.format(pid))
                     self.os.send_sig_int(pid)
-                    time.sleep(5)
+                    time.sleep(2)
+                    self.os.send_signal(pid, 1)
+                    time.sleep(2)
                     self.os.execute_command('sudo pkill -9 -P {}'.format(pid),blocking=True, external=False)
                     if self.os.check_if_pid_exists(pid):
                         self.os.send_sig_int(pid)

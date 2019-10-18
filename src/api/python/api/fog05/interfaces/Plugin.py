@@ -68,6 +68,9 @@ class Plugin(object):
         def send_sig_int(self, pid):
             return self.call_os_plugin_function('send_sig_int',{'pid':pid})
 
+        def send_signal(self, pid):
+            return self.call_os_plugin_function('send_sig_kill',{'pid':pid})
+
         def check_if_pid_exists(self, pid):
             return self.call_os_plugin_function('check_if_pid_exists',{'pid':pid})
 

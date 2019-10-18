@@ -118,6 +118,7 @@ class Linux(OSPlugin):
             'send_sig_int': self.send_sig_int,
             'check_if_pid_exists': self.check_if_pid_exists,
             'send_sig_kill': self.send_sig_kill,
+            'send_signal': self.send_signal,
             'get_intf_type': self.get_intf_type,
             'set_interface_unaviable': self.set_interface_unaviable,
             'set_interface_available': self.set_interface_available,
