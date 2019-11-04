@@ -15,11 +15,11 @@ package fog05
 
 type jsont = map[string]interface{}
 
-//Couple represent a Couple object usefull in case of functions returning couples
-type Couple struct {
-	St string
-	Nd string
-}
+// //Couple represent a Couple object usefull in case of functions returning couples
+// type Couple struct {
+// 	St string
+// 	Nd strings
+// }
 
 // VPORT ...
 const (

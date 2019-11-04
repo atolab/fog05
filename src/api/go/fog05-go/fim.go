@@ -171,17 +171,18 @@ func (n *NetworkAPI) ConnectCPToNetwork(cpid string, netid string) (*string, err
 	var node *string = nil
 	var portInfo *ConnectionPointRecord = nil
 
-	for _, p := range ports {
-		nid := p.St
-		pid := p.Nd
-		if pid == cpid {
-			portInfo, err = n.connector.Global.Actual.GetNodeNetworkPort(n.sysid, n.tenantid, nid, pid)
-			if err != nil {
-				return nil, err
+	for nid, v := range ports {
+		for _, pid := range v {
+			if pid == cpid {
+				portInfo, err = n.connector.Global.Actual.GetNodeNetworkPort(n.sysid, n.tenantid, nid, pid)
+				if err != nil {
+					return nil, err
+				}
+				node = &nid
+				break
 			}
-			node = &nid
-			break
 		}
+
 	}
 	if portInfo == nil && node == nil {
 		return nil, &FError{"Not found", nil}
@@ -206,17 +207,18 @@ func (n *NetworkAPI) DisconnectCP(cpid string) (*string, error) {
 	var node *string = nil
 	var portInfo *ConnectionPointRecord = nil
 
-	for _, p := range ports {
-		nid := p.St
-		pid := p.Nd
-		if pid == cpid {
-			portInfo, err = n.connector.Global.Actual.GetNodeNetworkPort(n.sysid, n.tenantid, nid, pid)
-			if err != nil {
-				return nil, err
+	for nid, v := range ports {
+		for _, pid := range v {
+			if pid == cpid {
+				portInfo, err = n.connector.Global.Actual.GetNodeNetworkPort(n.sysid, n.tenantid, nid, pid)
+				if err != nil {
+					return nil, err
+				}
+				node = &nid
+				break
 			}
-			node = &nid
-			break
 		}
+
 	}
 	if portInfo == nil && node == nil {
 		return nil, &FError{"Not found", nil}
@@ -656,18 +658,7 @@ func (f *FDUAPI) InstanceList(fduid string, nodeid *string) (map[string][]string
 		x := "*"
 		nodeid = &x
 	}
-	res := map[string][]string{}
-	instances, err := f.connector.Global.Actual.GetNodeFDUInstances(f.sysid, f.tenantid, *nodeid, fduid)
-	if err != nil {
-		return res, err
-	}
-	for _, c := range instances {
-		res[c.St] = []string{}
-	}
-	for _, c := range instances {
-		res[c.St] = append(res[c.St], c.Nd)
-	}
-	return res, nil
+	return f.connector.Global.Actual.GetNodeFDUInstances(f.sysid, f.tenantid, *nodeid, fduid)
 
 }
 

@@ -910,6 +910,15 @@ func (pl *FOSPlugin) GetLocalMGMTAddress() string {
 	return ip
 }
 
+// GetNodeConfiguration returns the node and agent configuration from YAKS
+func (pl *FOSPlugin) GetNodeConfiguration() NodeConfiguration {
+	s, err := pl.connector.Local.Actual.GetNodeConfiguration(pl.node)
+	if err != nil {
+		panic(err.Error())
+	}
+	return *s
+}
+
 // GetPluginState returns the plugin state, retrives it from YAKS, as a map[string]interface, each implementation of the plugin can have his own state representation
 func (pl *FOSPlugin) GetPluginState() map[string]interface{} {
 	s, err := pl.connector.Local.Actual.GetNodePluginState(pl.node, pl.UUID)

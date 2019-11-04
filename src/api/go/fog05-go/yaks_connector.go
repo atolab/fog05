@@ -872,16 +872,23 @@ func (gad *GAD) GetFDUNodes(sysid string, tenantid string, fduid string) ([]stri
 }
 
 // GetNodeFDUInstances ...
-func (gad *GAD) GetNodeFDUInstances(sysid string, tenantid string, nodeid string, fduid string) ([]Couple, error) {
+func (gad *GAD) GetNodeFDUInstances(sysid string, tenantid string, nodeid string, fduid string) (map[string][]string, error) {
 	s := gad.GetNodeFDUInstancesSelector(sysid, tenantid, nodeid, fduid)
 	kvs := gad.ws.Get(s)
-	var ids []Couple = []Couple{}
+	var ids map[string][]string = map[string][]string{}
 	if len(kvs) == 0 {
-		return []Couple{}, nil
+		return ids, nil
 	}
 	for _, kv := range kvs {
 		p := kv.Path()
-		ids = append(ids, Couple{gad.ExtractNodeIDFromPath(p), gad.ExtractNodeInstanceIDFromPath(p)})
+		nid := gad.ExtractNodeIDFromPath(p)
+		iid := gad.ExtractNodeInstanceIDFromPath(p)
+		if v, ok := ids[nid]; ok {
+			ids[nid] = append(v, iid)
+		} else {
+			ids[nid] = []string{iid}
+		}
+
 	}
 	return ids, nil
 }
@@ -1085,17 +1092,24 @@ func (gad *GAD) RemoveNetworkPort(sysid string, tenantid string, portid string) 
 }
 
 // GetAllNetworkPorts ...
-func (gad *GAD) GetAllNetworkPorts(sysid string, tenantid string) ([]Couple, error) {
+func (gad *GAD) GetAllNetworkPorts(sysid string, tenantid string) (map[string][]string, error) {
 	s := gad.GetAllPortsSelector(sysid, tenantid)
 	kvs := gad.ws.Get(s)
-	var ids []Couple = [](Couple){}
+	var ids map[string][]string = map[string][]string{}
 	if len(kvs) == 0 {
 		return ids, nil
 	}
 
 	for _, kv := range kvs {
 		p := kv.Path()
-		ids = append(ids, Couple{gad.ExtractNodeIDFromPath(p), gad.ExtractPortIDFromPath(p)})
+		nid := gad.ExtractNodeIDFromPath(p)
+		iid := gad.ExtractPortIDFromPath(p)
+		if v, ok := ids[nid]; ok {
+			ids[nid] = append(v, iid)
+		} else {
+			ids[nid] = []string{iid}
+		}
+
 	}
 	return ids, nil
 }
@@ -1136,10 +1150,10 @@ func (gad *GAD) RemoveNetworkRouter(sysid string, tenantid string, routerid stri
 }
 
 // GetAllNetworkRouters ...
-func (gad *GAD) GetAllNetworkRouters(sysid string, tenantid string) ([]Couple, error) {
+func (gad *GAD) GetAllNetworkRouters(sysid string, tenantid string) (map[string][]string, error) {
 	s := gad.GetAllRoutersSelector(sysid, tenantid)
 	kvs := gad.ws.Get(s)
-	var ids []Couple = []Couple{}
+	var ids map[string][]string = map[string][]string{}
 
 	if len(kvs) == 0 {
 		return ids, nil
@@ -1147,7 +1161,13 @@ func (gad *GAD) GetAllNetworkRouters(sysid string, tenantid string) ([]Couple, e
 
 	for _, kv := range kvs {
 		p := kv.Path()
-		ids = append(ids, Couple{gad.ExtractNodeIDFromPath(p), gad.ExtractPortIDFromPath(p)})
+		nid := gad.ExtractNodeIDFromPath(p)
+		iid := gad.ExtractPortIDFromPath(p)
+		if v, ok := ids[nid]; ok {
+			ids[nid] = append(v, iid)
+		} else {
+			ids[nid] = []string{iid}
+		}
 	}
 	return ids, nil
 }
